@@ -194,7 +194,7 @@ export const Chapters: CollectionConfig = {
         return data
       },
     ],
-  ],
+  },
   indexes: [
     {
       fields: ['book', 'chapterNumber'],
