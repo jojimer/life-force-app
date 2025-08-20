@@ -1,0 +1,103 @@
+We are building a book publishing platform with the following key characteristics:
+ - Content managed via Payload CMS
+ - Next.js frontend for web and mobile
+ - SQLite as the primary database (for simplicity in a small project)
+ - Guest users with local progress tracking (SQLite on mobile, IndexedDB on web)
+ - Option to persist progress via email without full authentication
+ - Deployment to Vercel for web, Capacitor for mobile apps
+
+Essential features:
+
+ 1. **Content Management (Payload CMS)**:
+    - Book creation with structured content (chapters, sections, images, etc.)
+    - Book metadata (title, author, cover image, description, categories)
+    - User-friendly admin interface for content editors
+
+ 2. **App Frontend (Next.js)**:
+    - Book catalog browsing (by category, author, etc.)
+    - Search books
+    - Book detail page with full content display
+    - Responsive design (mobile, tablet, desktop)
+
+ 3. **User Experience**:
+    - Guest access by default
+    - Option to save progress (reading position, bookmarks) via email backup
+    - No authentication required unless user wants to backup data
+
+ 4. **Offline Support (Mobile)**:
+    - Download books for offline reading (store book content in SQLite)
+    - Sync reading progress when online (if user has backed up via email)
+
+ 5. **Deployment**:
+    - Web: Vercel
+    - Mobile: Capacitor for iOS/Android
+
+ Feature List:
+ ### Core Features
+ **1. Book Catalog**
+   - Browse books by categories (genres)
+   - Featured books section
+   - Search by title, author, or keyword
+
+ **2. Book Detail Page**
+   - Cover image
+   - Title, author, description
+   - "Read Now" button
+   - Table of contents (if book has chapters)
+
+ **3. Reading Interface**
+   - Display book content (text and images)
+   - Chapter navigation
+   - Bookmarking (save current reading position per book)
+   - Text customization (font size, dark mode)
+
+ **4. User Progress**
+   - Track reading progress per book (last read position)
+   - Bookmark multiple positions (optional)
+   - "Continue Reading" section on home screen
+
+ **5. Data Backup (Optional)**
+   - Guest mode: All data stored locally (SQLite)
+   - Email backup: User enters email to back up progress
+     - Send verification email
+     - Upon verification, periodically sync progress to cloud
+   - If user reinstalls app, they can restore by entering same email
+
+ **6. Admin Features (Payload CMS)**
+   - Manage books: Create, edit, delete
+   - Manage categories
+   - Manage authors
+   - View backup data (user progress)
+
+ ### Technical Implementation Highlights
+ **Payload CMS Collections**:
+   - Books: 
+        - title, slug, author (relationship), coverImage, description, categories, content (rich text with blocks for chapters)
+   - Authors: 
+        - name, bio, photo
+   - Categories: 
+        - name, description
+   - UserBackups:
+        - email (unique), progress (JSON), verificationToken, isVerified
+ **Next.js Frontend**:
+   - Static generation for book catalog and book detail pages (SSG)
+   - Client-side fetching for reading progress
+
+ **Mobile Offline**:
+   - Use SQLite to store:
+        - Downloaded books (content as JSON)
+        - Reading progress
+        - Bookmarks
+
+ **Backup/Sync Flow**:
+   1. User enters email in app settings
+   2. App sends email with verification link (via Payload CMS endpoint)
+   3. Upon verification, app periodically uploads progress to Payload CMS (to UserBackups collection)
+   4. When restoring: 
+        - User enters email, app fetches backup from CMS and restores to local SQLite
+
+ ### Success Metrics
+ - Content editors can easily add and manage books via Payload CMS
+ - Users can read books offline without issues
+ - Backup/restore process works seamlessly
+ - App performance: Fast loading, smooth navigation
