@@ -140,35 +140,13 @@ export const Books: CollectionConfig = {
       },
     },
     {
-      name: 'content',
-      type: 'richText',
-      required: true,
+      name: 'chaptersCount',
+      type: 'number',
+      defaultValue: 0,
       admin: {
-        description: 'The full content of the book',
+        readOnly: true,
+        description: 'Number of chapters in this book',
       },
-    },
-    {
-      name: 'tableOfContents',
-      type: 'array',
-      admin: {
-        description: 'Chapter structure for navigation',
-      },
-      fields: [
-        {
-          name: 'chapterTitle',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'chapterSlug',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'pageNumber',
-          type: 'number',
-        },
-      ],
     },
     {
       name: 'tags',

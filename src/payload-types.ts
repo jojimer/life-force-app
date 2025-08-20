@@ -69,6 +69,9 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    books: Book;
+    authors: Author;
+    categories: Category;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -77,6 +80,9 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    books: BooksSelect<false> | BooksSelect<true>;
+    authors: AuthorsSelect<false> | AuthorsSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -158,6 +164,221 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "books".
+ */
+export interface Book {
+  id: number;
+  /**
+   * The title of the book
+   */
+  title: string;
+  /**
+   * URL-friendly version of the title
+   */
+  slug: string;
+  /**
+   * The author of this book
+   */
+  author: number | Author;
+  /**
+   * Cover image for the book
+   */
+  coverImage: number | Media;
+  /**
+   * Book description or synopsis
+   */
+  description: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * When the book was published
+   */
+  publicationDate: string;
+  /**
+   * International Standard Book Number
+   */
+  isbn?: string | null;
+  /**
+   * Book categories/genres
+   */
+  categories?: (number | Category)[] | null;
+  language: 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'other';
+  /**
+   * Number of pages in the book
+   */
+  pageCount?: number | null;
+  /**
+   * Publication status of the book
+   */
+  status: 'draft' | 'published' | 'archived';
+  /**
+   * Mark as featured book
+   */
+  featured?: boolean | null;
+  /**
+   * The full content of the book
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Chapter structure for navigation
+   */
+  tableOfContents?:
+    | {
+        chapterTitle: string;
+        chapterSlug: string;
+        pageNumber?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Additional tags for search and filtering
+   */
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Number of times this book has been downloaded
+   */
+  downloadCount?: number | null;
+  /**
+   * Average user rating (calculated field)
+   */
+  averageRating?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "authors".
+ */
+export interface Author {
+  id: number;
+  /**
+   * Full name of the author
+   */
+  name: string;
+  /**
+   * URL-friendly version of the author name
+   */
+  slug: string;
+  /**
+   * Author biography
+   */
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Author profile photo
+   */
+  photo?: (number | null) | Media;
+  /**
+   * Author contact email
+   */
+  email?: string | null;
+  /**
+   * Author website URL
+   */
+  website?: string | null;
+  /**
+   * Social media links
+   */
+  socialMedia?: {
+    twitter?: string | null;
+    facebook?: string | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+  };
+  /**
+   * Number of books by this author
+   */
+  booksCount?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  /**
+   * Category name (e.g., Fiction, Science, History)
+   */
+  name: string;
+  /**
+   * URL-friendly version of the category name
+   */
+  slug: string;
+  /**
+   * Brief description of this category
+   */
+  description?: string | null;
+  /**
+   * Hex color code for category display (e.g., #FF5733)
+   */
+  color?: string | null;
+  /**
+   * Optional icon for the category
+   */
+  icon?: (number | null) | Media;
+  /**
+   * Parent category for hierarchical organization
+   */
+  parentCategory?: (number | null) | Category;
+  /**
+   * Show this category prominently
+   */
+  featured?: boolean | null;
+  /**
+   * Number of books in this category
+   */
+  booksCount?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -170,6 +391,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'books';
+        value: number | Book;
+      } | null)
+    | ({
+        relationTo: 'authors';
+        value: number | Author;
+      } | null)
+    | ({
+        relationTo: 'categories';
+        value: number | Category;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -252,6 +485,82 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "books_select".
+ */
+export interface BooksSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  author?: T;
+  coverImage?: T;
+  description?: T;
+  publicationDate?: T;
+  isbn?: T;
+  categories?: T;
+  language?: T;
+  pageCount?: T;
+  status?: T;
+  featured?: T;
+  content?: T;
+  tableOfContents?:
+    | T
+    | {
+        chapterTitle?: T;
+        chapterSlug?: T;
+        pageNumber?: T;
+        id?: T;
+      };
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  downloadCount?: T;
+  averageRating?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "authors_select".
+ */
+export interface AuthorsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  bio?: T;
+  photo?: T;
+  email?: T;
+  website?: T;
+  socialMedia?:
+    | T
+    | {
+        twitter?: T;
+        facebook?: T;
+        instagram?: T;
+        linkedin?: T;
+      };
+  booksCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  color?: T;
+  icon?: T;
+  parentCategory?: T;
+  featured?: T;
+  booksCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
