@@ -72,6 +72,8 @@ export interface Config {
     books: Book;
     authors: Author;
     categories: Category;
+    chapters: Chapter;
+    'user-backups': UserBackup;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -83,6 +85,8 @@ export interface Config {
     books: BooksSelect<false> | BooksSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    chapters: ChaptersSelect<false> | ChaptersSelect<true>;
+    'user-backups': UserBackupsSelect<false> | UserBackupsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -149,7 +153,82 @@ export interface User {
  */
 export interface Media {
   id: number;
+  /**
+   * Alternative text for accessibility and SEO
+   */
   alt: string;
+  /**
+   * Image caption or description
+   */
+  caption?: string | null;
+  /**
+   * Type of media asset for better organization
+   */
+  type?:
+    | ('book-cover' | 'author-photo' | 'category-icon' | 'chapter-image' | 'hero' | 'thumbnail' | 'document' | 'other')
+    | null;
+  /**
+   * Tags for organizing and searching media
+   */
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Photographer or image source credit
+   */
+  photographer?: string | null;
+  /**
+   * Image licensing information
+   */
+  license?: ('all-rights-reserved' | 'creative-commons' | 'public-domain' | 'stock-photo' | 'custom') | null;
+  /**
+   * Mark as featured media for easy access
+   */
+  featured?: boolean | null;
+  /**
+   * SEO optimization settings
+   */
+  seo?: {
+    /**
+     * SEO title for the image
+     */
+    title?: string | null;
+    /**
+     * SEO description for the image
+     */
+    description?: string | null;
+    /**
+     * SEO keywords (comma-separated)
+     */
+    keywords?: string | null;
+  };
+  /**
+   * Usage tracking and metadata
+   */
+  usage?: {
+    /**
+     * Number of times downloaded
+     */
+    downloadCount?: number | null;
+    /**
+     * Last time this media was used
+     */
+    lastUsed?: string | null;
+    /**
+     * Collections where this media is used
+     */
+    usedIn?:
+      | {
+          collection?: string | null;
+          documentId?: string | null;
+          field?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -161,6 +240,48 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    cover?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    hero?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    mobile?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -228,34 +349,9 @@ export interface Book {
    */
   featured?: boolean | null;
   /**
-   * The full content of the book
+   * Number of chapters in this book
    */
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  /**
-   * Chapter structure for navigation
-   */
-  tableOfContents?:
-    | {
-        chapterTitle: string;
-        chapterSlug: string;
-        pageNumber?: number | null;
-        id?: string | null;
-      }[]
-    | null;
+  chaptersCount?: number | null;
   /**
    * Additional tags for search and filtering
    */
@@ -379,6 +475,183 @@ export interface Category {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chapters".
+ */
+export interface Chapter {
+  id: number;
+  /**
+   * Chapter title
+   */
+  title: string;
+  /**
+   * URL-friendly version of the chapter title
+   */
+  slug: string;
+  /**
+   * The book this chapter belongs to
+   */
+  book: number | Book;
+  /**
+   * Chapter order/number within the book
+   */
+  chapterNumber: number;
+  /**
+   * The full content of this chapter
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Brief chapter summary or excerpt
+   */
+  summary?: string | null;
+  /**
+   * Approximate word count for this chapter
+   */
+  wordCount?: number | null;
+  /**
+   * Estimated reading time in minutes
+   */
+  estimatedReadingTime?: number | null;
+  /**
+   * Publication status of the chapter
+   */
+  status: 'draft' | 'review' | 'published' | 'archived';
+  /**
+   * When this chapter was published
+   */
+  publishedAt?: string | null;
+  /**
+   * Mark as featured chapter (for previews, etc.)
+   */
+  featured?: boolean | null;
+  /**
+   * Internal notes for editors/authors
+   */
+  notes?: string | null;
+  /**
+   * Chapter-specific tags for organization
+   */
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Reading progress tracking metadata
+   */
+  readingProgress?: {
+    /**
+     * Average time users spend reading this chapter (minutes)
+     */
+    averageReadingTime?: number | null;
+    /**
+     * Percentage of users who complete this chapter
+     */
+    completionRate?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "user-backups".
+ */
+export interface UserBackup {
+  id: number;
+  /**
+   * User email for backup identification
+   */
+  email: string;
+  /**
+   * Token for email verification
+   */
+  verificationToken?: string | null;
+  /**
+   * Whether the email has been verified
+   */
+  isVerified?: boolean | null;
+  /**
+   * When the email was verified
+   */
+  verifiedAt?: string | null;
+  /**
+   * User reading progress data (JSON format)
+   */
+  progress?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * User bookmarks data (JSON format)
+   */
+  bookmarks?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * User app preferences (theme, font size, etc.)
+   */
+  preferences?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Last time data was synced
+   */
+  lastSyncAt?: string | null;
+  /**
+   * Information about the user device
+   */
+  deviceInfo?: {
+    platform?: ('web' | 'ios' | 'android') | null;
+    appVersion?: string | null;
+    /**
+     * Unique device identifier
+     */
+    deviceId?: string | null;
+  };
+  /**
+   * Total number of books completed
+   */
+  totalBooksRead?: number | null;
+  /**
+   * Total reading time in minutes
+   */
+  totalReadingTime?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -403,6 +676,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'chapters';
+        value: number | Chapter;
+      } | null)
+    | ({
+        relationTo: 'user-backups';
+        value: number | UserBackup;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -474,6 +755,38 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  caption?: T;
+  type?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  photographer?: T;
+  license?: T;
+  featured?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        keywords?: T;
+      };
+  usage?:
+    | T
+    | {
+        downloadCount?: T;
+        lastUsed?: T;
+        usedIn?:
+          | T
+          | {
+              collection?: T;
+              documentId?: T;
+              field?: T;
+              id?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -485,6 +798,60 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        cover?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        hero?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        mobile?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -503,15 +870,7 @@ export interface BooksSelect<T extends boolean = true> {
   pageCount?: T;
   status?: T;
   featured?: T;
-  content?: T;
-  tableOfContents?:
-    | T
-    | {
-        chapterTitle?: T;
-        chapterSlug?: T;
-        pageNumber?: T;
-        id?: T;
-      };
+  chaptersCount?: T;
   tags?:
     | T
     | {
@@ -559,6 +918,63 @@ export interface CategoriesSelect<T extends boolean = true> {
   parentCategory?: T;
   featured?: T;
   booksCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chapters_select".
+ */
+export interface ChaptersSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  book?: T;
+  chapterNumber?: T;
+  content?: T;
+  summary?: T;
+  wordCount?: T;
+  estimatedReadingTime?: T;
+  status?: T;
+  publishedAt?: T;
+  featured?: T;
+  notes?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  readingProgress?:
+    | T
+    | {
+        averageReadingTime?: T;
+        completionRate?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "user-backups_select".
+ */
+export interface UserBackupsSelect<T extends boolean = true> {
+  email?: T;
+  verificationToken?: T;
+  isVerified?: T;
+  verifiedAt?: T;
+  progress?: T;
+  bookmarks?: T;
+  preferences?: T;
+  lastSyncAt?: T;
+  deviceInfo?:
+    | T
+    | {
+        platform?: T;
+        appVersion?: T;
+        deviceId?: T;
+      };
+  totalBooksRead?: T;
+  totalReadingTime?: T;
   updatedAt?: T;
   createdAt?: T;
 }
