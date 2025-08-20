@@ -24,6 +24,11 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    meta: {
+      titleSuffix: '- Book Publishing Platform',
+      favicon: '/favicon.ico',
+      ogImage: '/og-image.jpg',
+    },
   },
   collections: [Users, Media, Books, Authors, Categories, Chapters, UserBackups],
   editor: lexicalEditor(),
@@ -37,6 +42,19 @@ export default buildConfig({
     },
   }),
   sharp,
+  upload: {
+    limits: {
+      fileSize: 10000000, // 10MB
+    },
+  },
+  cors: [
+    'http://localhost:3000',
+    'https://your-domain.com', // Replace with your actual domain
+  ],
+  csrf: [
+    'http://localhost:3000',
+    'https://your-domain.com', // Replace with your actual domain
+  ],
   plugins: [
     payloadCloudPlugin(),
     // storage-adapter-placeholder
