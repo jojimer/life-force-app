@@ -90,12 +90,12 @@ export const Media: CollectionConfig = {
     ],
     // File size limits (in bytes)
     limits: {
-      fileSize: 10 * 1024 * 1024, // 10MB max file size
+      fileSize: 50 * 1024 * 1024, // 50MB for book files and high-res images
     },
     // Disable file uploads that don't match criteria
     disableLocalStorage: false,
     // Configure upload directory structure
-    staticDir: 'media',
+    staticDir: process.env.NODE_ENV === 'production' ? undefined : 'media',
     // Enable focal point selection for better cropping
     focalPoint: true,
     // Crop settings
