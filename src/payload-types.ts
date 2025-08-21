@@ -74,6 +74,7 @@ export interface Config {
     categories: Category;
     chapters: Chapter;
     'user-backups': UserBackup;
+    'user-progress': UserProgress;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -87,6 +88,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     chapters: ChaptersSelect<false> | ChaptersSelect<true>;
     'user-backups': UserBackupsSelect<false> | UserBackupsSelect<true>;
+    'user-progress': UserProgressSelect<false> | UserProgressSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -652,6 +654,141 @@ export interface UserBackup {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "user-progress".
+ */
+export interface UserProgress {
+  id: number;
+  /**
+   * User email for progress identification and backup
+   */
+  email: string;
+  /**
+   * Unique guest identifier for linking anonymous sessions
+   */
+  guestId: string;
+  /**
+   * Whether the email has been verified
+   */
+  verified?: boolean | null;
+  /**
+   * Token for email verification
+   */
+  verificationToken?: string | null;
+  /**
+   * When the email was verified
+   */
+  verifiedAt?: string | null;
+  /**
+   * User reading progress data (JSON structure)
+   */
+  progress:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * User bookmarks and saved positions
+   */
+  bookmarks?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * User app preferences and settings
+   */
+  preferences?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Reading statistics and analytics
+   */
+  statistics?: {
+    /**
+     * Total number of books completed
+     */
+    totalBooksRead?: number | null;
+    /**
+     * Total reading time in minutes
+     */
+    totalReadingTime?: number | null;
+    /**
+     * Average words per minute
+     */
+    averageReadingSpeed?: number | null;
+    /**
+     * Longest consecutive reading days
+     */
+    longestStreak?: number | null;
+    /**
+     * Current consecutive reading days
+     */
+    currentStreak?: number | null;
+  };
+  /**
+   * Information about user devices
+   */
+  deviceInfo?: {
+    platform?: ('web' | 'ios' | 'android') | null;
+    /**
+     * App version when last synced
+     */
+    appVersion?: string | null;
+    /**
+     * Unique device identifier
+     */
+    deviceId?: string | null;
+    /**
+     * Browser/device user agent string
+     */
+    userAgent?: string | null;
+  };
+  /**
+   * History of sync operations
+   */
+  syncHistory?:
+    | {
+        syncedAt: string;
+        syncType: 'full' | 'progress' | 'preferences' | 'bookmarks';
+        deviceId?: string | null;
+        /**
+         * Size of synced data in bytes
+         */
+        dataSize?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Last time data was synced
+   */
+  lastSyncAt?: string | null;
+  /**
+   * Last recorded user activity
+   */
+  lastActivityAt?: string | null;
+  /**
+   * Whether this user is currently active
+   */
+  isActive?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -684,6 +821,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'user-backups';
         value: number | UserBackup;
+      } | null)
+    | ({
+        relationTo: 'user-progress';
+        value: number | UserProgress;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -975,6 +1116,51 @@ export interface UserBackupsSelect<T extends boolean = true> {
       };
   totalBooksRead?: T;
   totalReadingTime?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "user-progress_select".
+ */
+export interface UserProgressSelect<T extends boolean = true> {
+  email?: T;
+  guestId?: T;
+  verified?: T;
+  verificationToken?: T;
+  verifiedAt?: T;
+  progress?: T;
+  bookmarks?: T;
+  preferences?: T;
+  statistics?:
+    | T
+    | {
+        totalBooksRead?: T;
+        totalReadingTime?: T;
+        averageReadingSpeed?: T;
+        longestStreak?: T;
+        currentStreak?: T;
+      };
+  deviceInfo?:
+    | T
+    | {
+        platform?: T;
+        appVersion?: T;
+        deviceId?: T;
+        userAgent?: T;
+      };
+  syncHistory?:
+    | T
+    | {
+        syncedAt?: T;
+        syncType?: T;
+        deviceId?: T;
+        dataSize?: T;
+        id?: T;
+      };
+  lastSyncAt?: T;
+  lastActivityAt?: T;
+  isActive?: T;
   updatedAt?: T;
   createdAt?: T;
 }
