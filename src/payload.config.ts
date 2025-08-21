@@ -44,7 +44,7 @@ export default buildConfig({
   sharp,
   upload: {
     limits: {
-      fileSize: 10000000, // 10MB
+      fileSize: 50 * 1024 * 1024, // 50MB for book files and high-res images
     },
   },
   cors: [
