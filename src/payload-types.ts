@@ -75,6 +75,7 @@ export interface Config {
     chapters: Chapter;
     'user-backups': UserBackup;
     'user-progress': UserProgress;
+    'verification-tokens': VerificationToken;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -89,6 +90,7 @@ export interface Config {
     chapters: ChaptersSelect<false> | ChaptersSelect<true>;
     'user-backups': UserBackupsSelect<false> | UserBackupsSelect<true>;
     'user-progress': UserProgressSelect<false> | UserProgressSelect<true>;
+    'verification-tokens': VerificationTokensSelect<false> | VerificationTokensSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -671,7 +673,7 @@ export interface UserProgress {
    */
   verified?: boolean | null;
   /**
-   * Token for email verification
+   * Reference to verification token (deprecated - use VerificationTokens collection)
    */
   verificationToken?: string | null;
   /**
@@ -788,6 +790,73 @@ export interface UserProgress {
   createdAt: string;
 }
 /**
+ * Email verification tokens for user authentication
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "verification-tokens".
+ */
+export interface VerificationToken {
+  id: number;
+  /**
+   * Email address for verification
+   */
+  email: string;
+  /**
+   * Unique verification token
+   */
+  token: string;
+  /**
+   * Type of verification token
+   */
+  type: 'email-verification' | 'password-reset' | 'progress-backup' | 'account-recovery';
+  /**
+   * When this token expires
+   */
+  expiresAt: string;
+  /**
+   * Whether this token has been used
+   */
+  isUsed?: boolean | null;
+  /**
+   * When this token was used
+   */
+  usedAt?: string | null;
+  /**
+   * Associated guest ID for progress linking
+   */
+  guestId?: string | null;
+  /**
+   * Additional token metadata (device info, etc.)
+   */
+  metadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Number of verification attempts
+   */
+  attempts?: number | null;
+  /**
+   * Last verification attempt timestamp
+   */
+  lastAttemptAt?: string | null;
+  /**
+   * IP address when token was created
+   */
+  ipAddress?: string | null;
+  /**
+   * User agent when token was created
+   */
+  userAgent?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
@@ -825,6 +894,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'user-progress';
         value: number | UserProgress;
+      } | null)
+    | ({
+        relationTo: 'verification-tokens';
+        value: number | VerificationToken;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1161,6 +1234,26 @@ export interface UserProgressSelect<T extends boolean = true> {
   lastSyncAt?: T;
   lastActivityAt?: T;
   isActive?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "verification-tokens_select".
+ */
+export interface VerificationTokensSelect<T extends boolean = true> {
+  email?: T;
+  token?: T;
+  type?: T;
+  expiresAt?: T;
+  isUsed?: T;
+  usedAt?: T;
+  guestId?: T;
+  metadata?: T;
+  attempts?: T;
+  lastAttemptAt?: T;
+  ipAddress?: T;
+  userAgent?: T;
   updatedAt?: T;
   createdAt?: T;
 }
