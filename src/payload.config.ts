@@ -15,6 +15,7 @@ import { Categories } from './collections/Categories'
 import { Chapters } from './collections/Chapters'
 import { UserBackups } from './collections/UserBackups'
 import { UserProgress } from './collections/UserProgress'
+import { VerificationTokens } from './collections/VerificationTokens'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -32,7 +33,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Books, Authors, Categories, Chapters, UserBackups],
-  collections: [Users, Media, Books, Authors, Categories, Chapters, UserBackups, UserProgress],
+  collections: [Users, Media, Books, Authors, Categories, Chapters, UserBackups, UserProgress, VerificationTokens],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

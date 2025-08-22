@@ -43,8 +43,9 @@ export const UserProgress: CollectionConfig = {
       name: 'verificationToken',
       type: 'text',
       admin: {
-        description: 'Token for email verification',
+        description: 'Reference to verification token (deprecated - use VerificationTokens collection)',
         readOnly: true,
+        hidden: true,
       },
     },
     {
