@@ -4,7 +4,16 @@ export const Books: CollectionConfig = {
   slug: 'books',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'author', 'publicationDate', 'status'],
+    defaultColumns: ['title', 'author', 'status', 'featured', 'chaptersCount', 'updatedAt'],
+    group: 'Content Management',
+    description: 'Manage your book catalog, authors, and publication details',
+    pagination: {
+      defaultLimit: 20,
+    },
+    listSearchableFields: ['title', 'isbn'],
+    preview: (doc) => {
+      return `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/books/${doc.slug}`
+    },
   },
   access: {
     read: () => true,

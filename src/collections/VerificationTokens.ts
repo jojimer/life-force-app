@@ -4,9 +4,11 @@ export const VerificationTokens: CollectionConfig = {
   slug: 'verification-tokens',
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'type', 'isUsed', 'expiresAt', 'createdAt'],
+    defaultColumns: ['email', 'type', 'isUsed', 'attempts', 'expiresAt'],
     group: 'User Data',
     description: 'Email verification tokens for user authentication',
+    listSearchableFields: ['email'],
+    hidden: ({ user }) => !user, // Only show to authenticated admins
   },
   access: {
     read: ({ req: { user } }) => !!user, // Only admin can read tokens

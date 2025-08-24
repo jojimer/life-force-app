@@ -4,7 +4,10 @@ export const Categories: CollectionConfig = {
   slug: 'categories',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'description', 'booksCount'],
+    defaultColumns: ['name', 'featured', 'booksCount', 'updatedAt'],
+    group: 'Content Management',
+    description: 'Organize books by categories and genres',
+    listSearchableFields: ['name', 'description'],
   },
   access: {
     read: () => true,

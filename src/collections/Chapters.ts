@@ -4,8 +4,16 @@ export const Chapters: CollectionConfig = {
   slug: 'chapters',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'book', 'chapterNumber', 'status'],
+    defaultColumns: ['title', 'book', 'chapterNumber', 'status', 'wordCount', 'updatedAt'],
     group: 'Content',
+    description: 'Manage individual chapters and their content',
+    pagination: {
+      defaultLimit: 50,
+    },
+    listSearchableFields: ['title', 'summary'],
+    preview: (doc) => {
+      return `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/books/${doc.book}/chapters/${doc.slug}`
+    },
   },
   access: {
     read: () => true,

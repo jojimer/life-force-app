@@ -4,8 +4,10 @@ export const Media: CollectionConfig = {
   slug: 'media',
   admin: {
     useAsTitle: 'alt',
-    defaultColumns: ['filename', 'alt', 'mimeType', 'filesize', 'updatedAt'],
+    defaultColumns: ['filename', 'alt', 'type', 'featured', 'filesize', 'updatedAt'],
     group: 'Assets',
+    description: 'Manage images, documents, and other media files',
+    listSearchableFields: ['alt', 'filename', 'photographer'],
   },
   access: {
     read: () => true,

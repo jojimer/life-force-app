@@ -4,7 +4,13 @@ export const Authors: CollectionConfig = {
   slug: 'authors',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'email', 'booksCount'],
+    defaultColumns: ['name', 'email', 'booksCount', 'updatedAt'],
+    group: 'Content Management',
+    description: 'Manage author profiles and information',
+    listSearchableFields: ['name', 'email'],
+    preview: (doc) => {
+      return `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/authors/${doc.slug}`
+    },
   },
   access: {
     read: () => true,

@@ -152,6 +152,8 @@ export interface User {
   password?: string | null;
 }
 /**
+ * Manage images, documents, and other media files
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
@@ -288,6 +290,8 @@ export interface Media {
   };
 }
 /**
+ * Manage your book catalog, authors, and publication details
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "books".
  */
@@ -377,6 +381,8 @@ export interface Book {
   createdAt: string;
 }
 /**
+ * Manage author profiles and information
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "authors".
  */
@@ -437,6 +443,8 @@ export interface Author {
   createdAt: string;
 }
 /**
+ * Organize books by categories and genres
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories".
  */
@@ -478,6 +486,8 @@ export interface Category {
   createdAt: string;
 }
 /**
+ * Manage individual chapters and their content
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "chapters".
  */
@@ -655,6 +665,8 @@ export interface UserBackup {
   createdAt: string;
 }
 /**
+ * Monitor user reading progress and sync data
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "user-progress".
  */

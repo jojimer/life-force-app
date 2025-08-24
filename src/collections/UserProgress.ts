@@ -4,8 +4,10 @@ export const UserProgress: CollectionConfig = {
   slug: 'user-progress',
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'guestId', 'verified', 'lastSyncAt', 'totalBooksRead'],
+    defaultColumns: ['email', 'verified', 'lastSyncAt', 'isActive', 'updatedAt'],
     group: 'User Data',
+    description: 'Monitor user reading progress and sync data',
+    listSearchableFields: ['email'],
   },
   access: {
     read: () => true,

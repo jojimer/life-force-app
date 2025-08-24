@@ -27,10 +27,19 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: '- Book Publishing Platform',
+      titleSuffix: '- Life Force Books',
       favicon: '/favicon.ico',
       ogImage: '/og-image.jpg',
     },
+    components: {
+      // Custom dashboard
+      views: {
+        dashboard: {
+          Component: '@/components/admin/CustomDashboard',
+        },
+      },
+    },
+    css: path.resolve(dirname, 'styles/admin.css'),
   },
   collections: [Users, Media, Books, Authors, Categories, Chapters, UserBackups],
   collections: [Users, Media, Books, Authors, Categories, Chapters, UserBackups, UserProgress, VerificationTokens],
