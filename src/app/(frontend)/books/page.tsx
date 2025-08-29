@@ -20,7 +20,8 @@ interface BooksPageProps {
 }
 
 export default async function BooksPage({ searchParams }: BooksPageProps) {
-  const payload = await getPayload({ config })
+  const payloadConfig = await config
+  const payload = await getPayload({ config: payloadConfig })
   
   // Parse search parameters
   const {
@@ -50,7 +51,6 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
       or: [
         { title: { contains: search } },
         { description: { contains: search } },
-        { 'author.name': { contains: search } }
       ]
     })
   }
@@ -153,25 +153,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
                     <label htmlFor="sort" className="text-sm font-medium text-gray-700">
                       Sort by:
                     </label>
-                    <select
-                      id="sort"
-                      name="sort"
-                      className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      defaultValue={sort}
-                      onChange={(e) => {
-                        const url = new URL(window.location.href)
-                        url.searchParams.set('sort', e.target.value)
-                        url.searchParams.set('page', '1')
-                        window.location.href = url.toString()
-                      }}
-                    >
-                      <option value="-createdAt">Newest First</option>
-                      <option value="createdAt">Oldest First</option>
-                      <option value="title">Title A-Z</option>
-                      <option value="-title">Title Z-A</option>
-                      <option value="-featured">Featured First</option>
-                      <option value="-downloadCount">Most Popular</option>
-                    </select>
+                    <SortSelect currentSort={sort} />
                   </div>
                 </div>
               </div>
@@ -218,12 +200,12 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
                   <p className="text-gray-600 mb-4">
                     Try adjusting your search or filter criteria
                   </p>
-                  <button
-                    onClick={() => window.location.href = '/books'}
+                  <a
+                    href="/books"
                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     Clear all filters
-                  </button>
+                  </a>
                 </div>
               )}
             </div>
@@ -243,18 +225,42 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
           <p className="text-gray-600 mb-4">
             We couldn't load the books. Please try again later.
           </p>
-          <button
-            onClick={() => window.location.reload()}
+          <a
+            href="/books"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
             Try again
-          </button>
+          </a>
         </div>
       </div>
     )
   }
 }
 
+// Client-side sort component
+function SortSelect({ currentSort }: { currentSort: string }) {
+  return (
+    <select
+      id="sort"
+      name="sort"
+      className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      defaultValue={currentSort}
+      onChange={(e) => {
+        const url = new URL(window.location.href)
+        url.searchParams.set('sort', e.target.value)
+        url.searchParams.set('page', '1')
+        window.location.href = url.toString()
+      }}
+    >
+      <option value="-createdAt">Newest First</option>
+      <option value="createdAt">Oldest First</option>
+      <option value="title">Title A-Z</option>
+      <option value="-title">Title Z-A</option>
+      <option value="-featured">Featured First</option>
+      <option value="-downloadCount">Most Popular</option>
+    </select>
+  )
+}
 export const metadata = {
   title: 'Books - Life Force Books',
   description: 'Discover our collection of books across various genres and topics',

@@ -170,6 +170,19 @@ export function BookFilters({ authors, categories, currentFilters }: BookFilters
           </button>
         )}
       </div>
+
+      {/* Mobile Filter Toggle */}
+      <div className="lg:hidden mt-6">
+        <button
+          onClick={() => {
+            const sidebar = document.querySelector('.lg\\:w-64')
+            sidebar?.classList.toggle('hidden')
+          }}
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-700"
+        >
+          Apply Filters
+        </button>
+      </div>
     </div>
   )
 }
