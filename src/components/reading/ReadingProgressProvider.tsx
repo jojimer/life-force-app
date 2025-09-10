@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { useUserProgress } from '@/hooks/useUserProgress'
+import { useGuestSession } from '@/hooks/useGuestSession'
 import type { BookProgress, BookmarkData } from '@/lib/progress-utils'
 
 interface ReadingProgressContextType {
@@ -9,6 +9,7 @@ interface ReadingProgressContextType {
   addBookmark: (bookmark: Omit<BookmarkData, 'id' | 'createdAt'>) => void
   currentProgress: BookProgress | null
   isLoading: boolean
+  guestId: string | null
 }
 
 const ReadingProgressContext = createContext<ReadingProgressContextType | undefined>(undefined)
@@ -24,41 +25,79 @@ export function ReadingProgressProvider({
   bookId, 
   chapterId 
 }: ReadingProgressProviderProps) {
-  const [guestId] = useState(() => {
-    // Generate or retrieve guest ID
-    let id = localStorage.getItem('guestId')
-    if (!id) {
-      id = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      localStorage.setItem('guestId', id)
+  const { 
+    guestId, 
+    saveReadingProgress, 
+    getBookProgress,
+    isLoading: sessionLoading 
+  } = useGuestSession()
+
+  const [currentProgress, setCurrentProgress] = useState<BookProgress | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Load current progress when component mounts
+  useEffect(() => {
+    const loadProgress = async () => {
+      if (!guestId) return
+      
+      try {
+        const progress = await getBookProgress(bookId)
+        if (progress) {
+          setCurrentProgress({
+            bookId,
+            currentChapter: progress.chapterId,
+            currentPosition: progress.position,
+            lastReadAt: progress.timestamp,
+            timeSpent: 0, // Will be calculated from session data
+            completed: false,
+            startedAt: progress.timestamp,
+          })
+        }
+      } catch (error) {
+        console.error('Failed to load reading progress:', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
-    return id
-  })
 
-  const {
-    progress,
-    updateProgress: updateUserProgress,
-    addBookmark: addUserBookmark,
-    isLoading
-  } = useUserProgress({
-    guestId,
-    autoSync: false, // Don't auto-sync during reading for performance
-  })
-
-  const currentProgress = progress.books[bookId.toString()] || null
-
+    if (guestId) {
+      loadProgress()
+    } else if (!sessionLoading) {
+      setIsLoading(false)
+    }
+  }, [guestId, bookId, getBookProgress, sessionLoading])
   const updateProgress = (updates: Partial<BookProgress>) => {
-    updateUserProgress(bookId, {
+    if (!guestId) return
+
+    const newProgress = {
+      ...currentProgress,
       ...updates,
+      bookId,
       lastReadAt: new Date().toISOString(),
+    } as BookProgress
+
+    setCurrentProgress(newProgress)
+
+    // Save to storage
+    saveReadingProgress({
+      bookId,
+      chapterId: updates.currentChapter || chapterId,
+      chapterSlug: '', // Will be updated by the chapter component
+      position: updates.currentPosition || 0,
+    }).catch(error => {
+      console.error('Failed to save reading progress:', error)
     })
   }
 
   const addBookmark = (bookmark: Omit<BookmarkData, 'id' | 'createdAt'>) => {
-    addUserBookmark(bookmark)
+    // TODO: Implement bookmark storage in guest session
+    console.log('Adding bookmark:', bookmark)
   }
 
   // Track reading session start
   useEffect(() => {
+    if (!guestId) return
+    
     const startTime = Date.now()
     
     // Update progress when component mounts (user started reading)
@@ -76,13 +115,14 @@ export function ReadingProgressProvider({
         })
       }
     }
-  }, [bookId, chapterId])
+  }, [bookId, chapterId, guestId])
 
   const contextValue: ReadingProgressContextType = {
     updateProgress,
     addBookmark,
     currentProgress,
-    isLoading,
+    isLoading: isLoading || sessionLoading,
+    guestId,
   }
 
   return (

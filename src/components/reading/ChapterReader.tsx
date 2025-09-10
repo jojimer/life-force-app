@@ -111,9 +111,11 @@ export function ChapterReader({ chapter, book }: ChapterReaderProps) {
 
   // Add bookmark functionality
   const handleAddBookmark = () => {
+    if (!contentRef.current) return
+    
     const scrollPercent = Math.round(
       ((window.pageYOffset || document.documentElement.scrollTop) / 
-       (contentRef.current!.scrollHeight - window.innerHeight)) * 100
+       (contentRef.current.scrollHeight - window.innerHeight)) * 100
     )
 
     addBookmark({
