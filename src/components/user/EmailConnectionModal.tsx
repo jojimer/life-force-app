@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useEmailVerification } from '@/hooks/useEmailVerification'
 import { useGuestSession } from '@/hooks/useGuestSession'
+import { useUserProgress } from '@/hooks/useUserProgress'
 
 interface EmailConnectionModalProps {
   isOpen: boolean
@@ -16,9 +17,14 @@ export function EmailConnectionModal({ isOpen, onClose, onSuccess }: EmailConnec
   const [verificationCode, setVerificationCode] = useState('')
   
   const { guestId } = useGuestSession()
+  const { progress, bookmarks, preferences } = useUserProgress({
+    guestId: guestId || '',
+    autoSync: false
+  })
+  
   const { 
     sendVerificationEmail, 
-    verifyToken, 
+    verifyTokenWithProgress,
     isLoading, 
     error, 
     clearError,
@@ -53,7 +59,17 @@ export function EmailConnectionModal({ isOpen, onClose, onSuccess }: EmailConnec
     if (!verificationCode.trim()) return
     
     try {
-      await verifyToken(verificationCode, 'progress-backup')
+      // Prepare guest progress data for sync
+      const guestProgress = {
+        books: progress.books,
+        currentlyReading: progress.currentlyReading,
+        completed: progress.completed,
+        lastActivity: progress.lastActivity,
+        bookmarks,
+        preferences,
+      }
+      
+      await verifyTokenWithProgress(verificationCode, guestProgress, 'progress-backup')
     } catch (error) {
       // Error is handled by the hook
     }

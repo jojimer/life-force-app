@@ -236,8 +236,15 @@ export function mergeProgressData(
   Object.entries(remote.books).forEach(([bookId, remoteProgress]) => {
     const localProgress = mergedBooks[bookId]
     
-    if (!localProgress || new Date(remoteProgress.lastReadAt) > new Date(localProgress.lastReadAt)) {
+    if (!localProgress || 
+        new Date(remoteProgress.lastReadAt) > new Date(localProgress.lastReadAt)) {
       mergedBooks[bookId] = remoteProgress
+    } else {
+      // Merge time spent from both sources
+      mergedBooks[bookId] = {
+        ...localProgress,
+        timeSpent: Math.max(localProgress.timeSpent, remoteProgress.timeSpent)
+      }
     }
   })
 
@@ -256,5 +263,44 @@ export function mergeProgressData(
       .filter(Boolean)
       .sort()
       .pop() || null,
+  }
+}
+
+/**
+ * Calculate reading statistics from progress data
+ */
+export function calculateReadingStats(progress: UserProgressData): {
+  totalBooks: number
+  completedBooks: number
+  currentlyReading: number
+  totalReadingTime: number
+  averageReadingTime: number
+  booksStarted: number
+} {
+  const books = Object.values(progress.books)
+  const completedBooks = books.filter(book => book.completed)
+  const totalReadingTime = books.reduce((total, book) => total + book.timeSpent, 0)
+
+  return {
+    totalBooks: books.length,
+    completedBooks: completedBooks.length,
+    currentlyReading: progress.currentlyReading.length,
+    totalReadingTime,
+    averageReadingTime: completedBooks.length > 0 
+      ? totalReadingTime / completedBooks.length 
+      : 0,
+    booksStarted: books.length,
+  }
+}
+
+/**
+ * Sanitize progress data for storage
+ */
+export function sanitizeProgressData(data: any): UserProgressData {
+  return {
+    books: data.books || {},
+    currentlyReading: Array.isArray(data.currentlyReading) ? data.currentlyReading : [],
+    completed: Array.isArray(data.completed) ? data.completed : [],
+    lastActivity: data.lastActivity || null,
   }
 }

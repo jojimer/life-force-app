@@ -65,7 +65,8 @@ export function useEmailVerification(options: UseEmailVerificationOptions = {}) 
   // Verify token
   const verifyToken = useCallback(async (
     token: string,
-    type: 'email-verification' | 'progress-backup' = 'email-verification'
+    type: 'email-verification' | 'progress-backup' = 'email-verification',
+    guestProgress?: any
   ) => {
     setIsLoading(true)
     setError(null)
@@ -79,6 +80,7 @@ export function useEmailVerification(options: UseEmailVerificationOptions = {}) 
         body: JSON.stringify({
           token,
           type,
+          guestProgress,
         }),
       })
 
@@ -103,6 +105,15 @@ export function useEmailVerification(options: UseEmailVerificationOptions = {}) 
       setIsLoading(false)
     }
   }, [options])
+
+  // Sync guest progress during verification
+  const verifyTokenWithProgress = useCallback(async (
+    token: string,
+    guestProgress: any,
+    type: 'email-verification' | 'progress-backup' = 'progress-backup'
+  ) => {
+    return verifyToken(token, type, guestProgress)
+  }, [verifyToken])
 
   // Check if email has pending verification
   const checkPendingVerification = useCallback(async (
@@ -139,6 +150,7 @@ export function useEmailVerification(options: UseEmailVerificationOptions = {}) 
     // Actions
     sendVerificationEmail,
     verifyToken,
+    verifyTokenWithProgress,
     checkPendingVerification,
     resendVerification,
 
