@@ -4,6 +4,7 @@ import config from '@/payload.config'
 import { ChapterReader } from '@/components/reading/ChapterReader'
 import { ChapterNavigation } from '@/components/reading/ChapterNavigation'
 import { ReadingProgressProvider } from '@/components/reading/ReadingProgressProvider'
+import { ProgressSavePrompt } from '@/components/user/ProgressSavePrompt'
 import type { Book, Author, Chapter } from '@/payload-types'
 
 interface ChapterPageProps {
@@ -159,6 +160,11 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
               chapter={currentChapter}
               book={book}
             />
+
+            {/* Progress Save Prompt */}
+            <div className="mt-8">
+              <ProgressSavePrompt />
+            </div>
 
             {/* Chapter Navigation */}
             <div className="mt-12 pt-8 border-t border-gray-200">
