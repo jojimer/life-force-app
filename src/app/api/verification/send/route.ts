@@ -119,6 +119,8 @@ function getEmailSubject(type: string): string {
       return 'Your Life Force Books Verification Code'
     case 'email-verification':
       return 'Verify Your Email - Life Force Books'
+    case 'account-recovery':
+      return 'Recover Your Progress - Life Force Books'
     default:
       return 'Verification Code - Life Force Books'
   }
@@ -127,10 +129,14 @@ function getEmailSubject(type: string): string {
 function getEmailTemplate(code: string, type: string): string {
   const title = type === 'progress-backup' 
     ? 'Save Your Reading Progress' 
+    : type === 'account-recovery'
+    ? 'Recover Your Reading Progress'
     : 'Verify Your Email'
     
   const description = type === 'progress-backup'
     ? 'Use this code to connect your email and save your reading progress:'
+    : type === 'account-recovery'
+    ? 'Use this code to recover your saved reading progress:'
     : 'Use this code to verify your email address:'
 
   return `

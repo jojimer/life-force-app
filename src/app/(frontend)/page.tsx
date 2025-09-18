@@ -5,6 +5,7 @@ import React from 'react'
 
 import config from '@/payload.config'
 import type { Book } from '@/payload-types'
+import { ProgressRecoveryButton } from '@/components/user/ProgressRecoveryButton'
 import './styles.css'
 
 export default async function HomePage() {
@@ -90,6 +91,16 @@ export default async function HomePage() {
           </div>
         </div>
       )}
+
+      {/* Progress Recovery */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">
+            Have reading progress saved to an email? 
+          </p>
+          <ProgressRecoveryButton variant="link" />
+        </div>
+      </div>
 
       {/* Admin Link for authenticated users */}
       {user && (
